@@ -139,4 +139,13 @@ class SerdeTests: XCTestCase {
         s.sort_map_entries(offsets: offsets)
         XCTAssertEqual(s.get_bytes(), [255 /**/, 0 /**/, 0 /**/, 0, 0 /**/, 0, 1, 0 /**/, 1 /**/, 2, 0, 0, 0])
     }
+
+    func testBcsSerializerRoundTripsBytes() throws {
+        let bytes = [UInt8](repeating: 77, count: 20_000)
+        let serializer = BcsSerializer()
+        try serializer.serialize_bytes(value: bytes)
+        let deserializer = BcsDeserializer(input: serializer.get_bytes())
+        let result = try deserializer.deserialize_bytes()
+        XCTAssertEqual(result, bytes, "should match")
+    }
 }
